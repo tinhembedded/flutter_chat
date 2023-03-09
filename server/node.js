@@ -5,14 +5,6 @@ const io = require('socket.io')(http);
 var userList = [];
 var groupList = [];
 
-const MongoClient = require('mongodb').MongoClient;
-const url = 'mongodb://localhost:27017/chat-history';
-
-MongoClient.connect(url, function(err, db) {
-  if (err) throw err;
-  console.log('Connected to database!');
-});
-
 io.on('connection', (socket) => {
   console.log('a user connected');
 
@@ -93,18 +85,6 @@ io.on('connection', (socket) => {
   socket.on('chat group', (data) => {
     console.log(`Message from ${data.senderUsername} to ${data.groupName}: ${data.message}`);
 
-    console.log(`Message from ${data.senderUsername} to ${data.receiverUsername}: ${data.message}`);
-
-    const collection = db.collection('messages');
-    collection.insertOne({
-      senderUsername: data.senderUsername,
-      receiverUsername: data.receiverUsername,
-      message: data.message,
-      timestamp: data.timestamp
-    }, function(err, result) {
-      if (err) throw err;
-      console.log('Message saved to database');
-    });
   
     io.emit('chat message', {
       'recieverUsername': data.receiverUsername,
